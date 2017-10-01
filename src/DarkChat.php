@@ -13,6 +13,30 @@ class DarkChat extends DarkChatDatabase
         $this->input = $this->loadInput();
     }
 
+    public static function load($name = '') {
+        $instance = new self();
+        $instance->setInstance($name);
+        $instance->do();
+        return $instance;
+    }
+
+    protected function do() {
+        switch ($this->getInput('command')) {
+            case 'xmlmessages':
+                $this->displayMessagesXML();
+                break;
+            case 'xmlsendmessage':
+                $this->sendMessageXML();
+                break;
+            case 'send':
+                $this->sendHTMLMessage();
+                break;
+            default:
+                $this->renderHTML();
+                break;
+        }
+    }
+
     protected fuction loadInputVar($varname) {
         $data = '';
         if (array_key_exists($varname, $_GET)) $data = htmlspecialchars($_GET[$varname]);
@@ -32,8 +56,17 @@ class DarkChat extends DarkChatDatabase
             'lastmod' => $this->loadInput('lmts'),
             'tzoffset' => $this->loadInput('tzoffset'),
             'addr' => $this->loadServerVar'REMOTE_ADDR'),
-            'useragent' => $this->loadServerVar('HTTP_USER_AGENT')
+            'useragent' => $this->loadServerVar('HTTP_USER_AGENT'),
+            'self' => $this->loadServerVar('PHP_SELF')
         );
+    }
+
+    public function setInstance($name) {
+        $this->input['instance'] = $name;
+    }
+
+    public function getInput($name) {
+        return $this->input[$name];
     }
 
     protected function getFormattedTime($time, $offset) {
@@ -71,14 +104,14 @@ class DarkChat extends DarkChatDatabase
         header("Pragma: no-cache");
     }
 
-    public function displayMessagesXML() {
+    protected function displayMessagesXML() {
         // Display messages as XML
         $this->xmlHeaderNoCache();
 	$lmd = $this->getLastModifiedDate();
 	header("Last-Modified: " . gmdate("r", strtotime($lmd)));
-	if ($this->input['lastmod'}!=md5($lmd)) {
+	if ($this->getInput('lastmod')!=md5($lmd)) {
 	    echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
-	    echo $this->getMessagesXML($this->input['tzoffset']);
+	    echo $this->getMessagesXML($this->getInput('tzoffset'));
 	    return (true);
 	} else {
 	    echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
@@ -88,13 +121,13 @@ class DarkChat extends DarkChatDatabase
         }
     }
 
-    public function sendMessageXML() {
+    protected function sendMessageXML() {
 	// Send message as and return response in XML
-	if (($this->input['name']!="") && ($this->input['message']!='')) {
+	if (($this->getInput('name')!="") && ($this->getInput('message')!='')) {
             if (
                 $this->sendMessage(
-                    $this->input['name'], $this->input['message'], 
-                    $this->input['addr'], $this->input['useragent']
+                    $this->getInput('name'), $this->getInput('message'), 
+                    $this->getInput('addr'), $this->getInput('useragent')
                 )!==false
             ) {
                 header("HTTP/1.1 201 Created");
@@ -115,15 +148,14 @@ class DarkChat extends DarkChatDatabase
 	}
     }
 
-    public function sendHTMLMessage() {
-        if (($this->input['name']!='') && ($this->['message']!='')) {
+    protected function sendHTMLMessage() {
+        if (($this->getInput('name')!='') && ($this->getInput('message')!='')) {
             if (
                 $this->sendMessage(
-                    $this->input['name'], $this->input['message'], 
-                    $this->input['addr'], $this->input['useragent']
+                    $this->getInput('name'), $this->getInput('message'),
+                    $this->getInput('addr'), $this->getInput('useragent')
                 )!==false
             ) {
-
 		return "Message sent";
             } else {
 		return "Message NOT sent";
@@ -132,8 +164,9 @@ class DarkChat extends DarkChatDatabase
 	    return "Message NOT sent";
         }
     }
-}
 
-
+    protected function renderHTML() {
+        include('Web.php');
+    }
 }
 
