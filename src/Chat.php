@@ -80,7 +80,6 @@ class Chat extends Database
 
     protected function getFormattedTime($time, $offset) {
         // times are stored in UTC
-        echo $time;
         $dateTime = new \DateTime ($time, new \DateTimeZone('UTC'));
         // convert to users $offset time
         if ($offset) $dateTime->setTimezone(new \DateTimeZone($offset < 0 ? $offset : '+' . $offset));
