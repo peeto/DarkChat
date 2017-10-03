@@ -13,15 +13,17 @@ class DarkChat extends DarkChatDatabase
         $this->input = $this->loadInput();
     }
 
-    public static function load($name = '') {
+    public static function load($name = '', $url='', $command='') {
         $instance = new self();
         $instance->setInstance($name);
-        $instance->do();
+        $command = $command=='' ? $instance->getInput('$command') : $command;
+        if ($url!='') $instance->setinput('self', $url);
+        $instance->do($command);
         return $instance;
     }
 
-    protected function do() {
-        switch ($this->getInput('command')) {
+    public function do($command = '') {
+        switch ($command)) {
             case 'xmlmessages':
                 $this->displayMessagesXML();
                 break;
@@ -53,6 +55,7 @@ class DarkChat extends DarkChatDatabase
             'command' => $this->loadInput('hc'),
             'name' => $this->loadInput('sendname'),
             'message' => $this->loadInput('sendmessage'),
+            'status' => '',
             'lastmod' => $this->loadInput('lmts'),
             'tzoffset' => $this->loadInput('tzoffset'),
             'addr' => $this->loadServerVar'REMOTE_ADDR'),
@@ -61,12 +64,16 @@ class DarkChat extends DarkChatDatabase
         );
     }
 
-    public function setInstance($name) {
-        $this->input['instance'] = $name;
-    }
-
     public function getInput($name) {
         return $this->input[$name];
+    }
+
+    public function setInput($name, $value) {
+        return $this->input[$name] = $value;
+    }
+
+    public function setInstance($name) {
+        $this->setInput('instance') = $name;
     }
 
     protected function getFormattedTime($time, $offset) {
@@ -121,15 +128,16 @@ class DarkChat extends DarkChatDatabase
         }
     }
 
+    protected function autoSendMessage() {
+        return $this->sendMessage(
+            $this->getInput('name'), $this->getInput('message'), 
+            $this->getInput('addr'), $this->getInput('useragent')
+        )!==false;
+
     protected function sendMessageXML() {
 	// Send message as and return response in XML
-	if (($this->getInput('name')!="") && ($this->getInput('message')!='')) {
-            if (
-                $this->sendMessage(
-                    $this->getInput('name'), $this->getInput('message'), 
-                    $this->getInput('addr'), $this->getInput('useragent')
-                )!==false
-            ) {
+	if (($this->getInput('name')!='') && ($this->getInput('message')!='')) {
+            if ($this->autoSendMessage()) {
                 header("HTTP/1.1 201 Created");
                 $this->xmlHeaderNoCache();
 		echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
@@ -150,22 +158,19 @@ class DarkChat extends DarkChatDatabase
 
     protected function sendHTMLMessage() {
         if (($this->getInput('name')!='') && ($this->getInput('message')!='')) {
-            if (
-                $this->sendMessage(
-                    $this->getInput('name'), $this->getInput('message'),
-                    $this->getInput('addr'), $this->getInput('useragent')
-                )!==false
-            ) {
-		return "Message sent";
+            if ($this->autoSendMessage()) {
+		$this->setInput('status', 'Message sent');
             } else {
-		return "Message NOT sent";
+		$this->setInput('status', 'Message NOT sent');
             }
         } else {
-	    return "Message NOT sent";
+	    $this->setInput('status', 'Message NOT sent');
         }
+        $this->renderHTML();
     }
 
     protected function renderHTML() {
+        $this->setInput('messages', $this->listMessages());
         include('Web.php');
     }
 }

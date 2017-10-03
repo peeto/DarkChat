@@ -1,6 +1,7 @@
 <?php
 namespace peeto/DarkChat;
 
+$iname = $this->getInput('instance');
 ?>
 <script language="javascript" type="text/javascript">
 <!--
@@ -30,21 +31,21 @@ function getXMLHTTPRequestObject() {
 
 String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ""); };
 
-var loadMessagesXHRO;
-var sendMessageXHRO;
-var oLoadMessagesTimer = "";
-var oSendStatusTimer = "";
-var sLastMessageHash = "";
+var <?php echo $iname; ?>loadMessagesXHRO;
+var <?php echo $iname; ?>sendMessageXHRO;
+var <?php echo $iname; ?>oLoadMessagesTimer = "";
+var <?php echo $iname; ?>oSendStatusTimer = "";
+var <?php echo $iname; ?>sLastMessageHash = "";
 
-function loadMessagesXHROHandler() {
-    var oMessageStatusUI = document.getElementById("sendstatus");
-    if (loadMessagesXHRO.readyState == 3) {
+function <?php echo $iname; ?>loadMessagesXHROHandler() {
+    var oMessageStatusUI = document.getElementById("<?php echo $iname; ?>sendstatus");
+    if (<?php echo $iname; ?>loadMessagesXHRO.readyState == 3) {
         oMessageStatusUI.innerHTML = "Retrieving new messages...";
     }
-    if (loadMessagesXHRO.readyState == 4) {
-        if (loadMessagesXHRO.status == 200) {
-            var oMessageUI = document.getElementById("messages");
-            var oXML = loadMessagesXHRO.responseXML;
+    if (<?php echo $iname; ?>loadMessagesXHRO.readyState == 4) {
+        if (<?php echo $iname; ?>loadMessagesXHRO.status == 200) {
+            var oMessageUI = document.getElementById("<?php echo $iname; ?>messages");
+            var oXML = <?php echo $iname; ?>loadMessagesXHRO.responseXML;
             var oXMLHeader = oXML.getElementsByTagName("messages");
             if (oXMLHeader[0]!=undefined) {
                 sLastMessageHash = oXMLHeader[0].getAttribute("lmhash");
@@ -73,16 +74,16 @@ function loadMessagesXHROHandler() {
     }
 }
 
-function sendMessageXHROHandler() {
-    var oMessageStatusUI = document.getElementById("sendstatus");
-    if (sendMessageXHRO.readyState == 3) {
+function <?php echo $iname; ?>sendMessageXHROHandler() {
+    var oMessageStatusUI = document.getElementById("<?php echo $iname; ?>sendstatus");
+    if (<?php echo $iname; ?>sendMessageXHRO.readyState == 3) {
         oMessageStatusUI.innerHTML = "Sending message...";
     }
-    if (sendMessageXHRO.readyState == 4) {
-        var oMessageSendButtonUI = document.getElementById("sendsubmit");
-        var oMessageResetButtonUI = document.getElementById("sendreset");
-        var oXML = sendMessageXHRO.responseXML;
-        var oXMLData = oXML.getElementsByTagName("status");
+    if (<?php echo $iname; ?>sendMessageXHRO.readyState == 4) {
+        var oMessageSendButtonUI = document.getElementById("<?php echo $iname; ?>sendsubmit");
+        var oMessageResetButtonUI = document.getElementById("<?php echo $iname; ?>sendreset");
+        var oXML = <?php echo $iname; ?>sendMessageXHRO.responseXML;
+        var oXMLData = oXML.getElementsByTagName("<?php echo $iname; ?>status");
         var sStatus = oXMLData[0].childNodes[0].data;
         if (sStatus=="received") {
             oMessageStatusUI.innerHTML = "Message sent";
@@ -92,30 +93,32 @@ function sendMessageXHROHandler() {
         oMessageSendButtonUI.disabled = false;
         oMessageResetButtonUI.disabled = false;
         oMessageSendButtonUI.value = "Send";
-        oSendStatusTimer = window.setTimeout("clearSendStatus()", <?php echo SITECHATUISTATUSSHOWTIME; ?>);
-        loadMessages();
+        oSendStatusTimer = window.setTimeout("<?php echo $iname; ?>clearSendStatus()", <?php echo $this->getConfig('UI_STATUS_SHOW_TIME'); ?>);
+        <?php echo $iname; ?>loadMessages();
     }
 }
 
-function loadMessages() {
-    loadMessagesXHRO = getXMLHTTPRequestObject();
-    loadMessagesXHRO.onreadystatechange = loadMessagesXHROHandler;
-    loadMessagesXHRO.open("GET", "<?php echo $_SERVER["PHP_SELF"]; ?>?hc=xmlmessages&lmts=" + sLastMessageHash, true);
-    loadMessagesXHRO.send(" ");
+function <?php echo $iname; ?>loadMessages() {
+    var dDate = new Date();
+    var tzoffset = dDate.getTimezoneOffset() / 60;
+    <?php echo $iname; ?>loadMessagesXHRO = getXMLHTTPRequestObject();
+    <?php echo $iname; ?>loadMessagesXHRO.onreadystatechange = <?php echo $iname; ?>loadMessagesXHROHandler;
+    <?php echo $iname; ?>loadMessagesXHRO.open("GET", "<?php echo $this->getInput('self'); ?>?hc=xmlmessages&tzoffset=" + tzoffset + "&lmts=" + <?php echo $iname; ?>sLastMessageHash, true);
+    <?php echo $iname; ?>loadMessagesXHRO.send(" ");
 }
 
-function clearSendStatus() {
-    var oMessageStatusUI = document.getElementById("sendstatus");
+function <?php echo $iname; ?>clearSendStatus() {
+    var oMessageStatusUI = document.getElementById("<?php echo $iname; ?>sendstatus");
     oMessageStatusUI.innerHTML = "";
 }
 
-function sendMessage() {
-    var oMessageTextUI = document.getElementById("sendmessage");
-    var oMessageNameUI = document.getElementById("sendname");
-    var oMessageSendButtonUI = document.getElementById("sendsubmit");
-    var oMessageResetButtonUI = document.getElementById("sendreset");
+function <?php echo $iname; ?>sendMessage() {
+    var oMessageTextUI = document.getElementById("<?php echo $iname; ?>sendmessage");
+    var oMessageNameUI = document.getElementById("<?php echo $iname; ?>sendname");
+    var oMessageSendButtonUI = document.getElementById("<?php echo $iname; ?>sendsubmit");
+    var oMessageResetButtonUI = document.getElementById("<?php echo $iname; ?>sendreset");
 
-    validateSendMessage();
+    <?php echo $iname; ?>validateSendMessage();
     if (oMessageNameUI.value=="") {
         oMessageNameUI.focus();
         window.alert("You must enter your name.");
@@ -125,28 +128,30 @@ function sendMessage() {
         window.alert("You must type a message.");
         return false;
     } else {
-        var sPostData = "hc=xmlsendmessage&sendname=" + encodeURIComponent(oMessageNameUI.value) + "&sendmessage=" + encodeURIComponent(oMessageTextUI.value);
+        var dDate = new Date();
+        var tzoffset = dDate.getTimezoneOffset() / 60;
+        var sPostData = "hc=xmlsendmessage&tzoffset=" + tzoffset  + "&sendname=" + encodeURIComponent(oMessageNameUI.value) + "&sendmessage=" + encodeURIComponent(oMessageTextUI.value);
         window.clearTimeout(oSendStatusTimer);
         sendMessageXHRO = getXMLHTTPRequestObject();
         sendMessageXHRO.onreadystatechange = sendMessageXHROHandler;
-        sendMessageXHRO.open("POST", "<?php echo $_SERVER["PHP_SELF"]; ?>", true);
+        sendMessageXHRO.open("POST", "<?php echo $this->getInput('self'); ?>", true);
         sendMessageXHRO.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         sendMessageXHRO.setRequestHeader("Content-length", sPostData.length);
         sendMessageXHRO.setRequestHeader("Connection", "close");
         sendMessageXHRO.send(sPostData);
         oMessageTextUI.value = "";
         oMessageSendButtonUI.value = "Sending message...";
-        oSendStatusTimer = window.setTimeout("clearSendStatus()", <?php echo SITECHATUISTATUSSHOWTIME; ?>);
+        oSendStatusTimer = window.setTimeout("clearSendStatus()", <?php echo $this->getConfig('UI_STATUS_SHOW_TIME'); ?>);
         oMessageTextUI.focus();
         sOrigName = oMessageNameUI.value;
-        validateSendMessage();
+        <?php echo $iname; ?>validateSendMessage();
         return false;
     }
 }
 
-loadMessagesXHRO = getXMLHTTPRequestObject();
-if (loadMessagesXHRO) {
-    oLoadMessagesTimer = window.setInterval("loadMessages()", <?php echo SITECHATUIMESSAGESREFRESHDELAY; ?>);
+<?php echo $iname; ?>loadMessagesXHRO = getXMLHTTPRequestObject();
+if (<?php echo $iname; ?>loadMessagesXHRO) {
+    <?php echo $iname; ?>oLoadMessagesTimer = window.setInterval("<?php echo $iname; ?>loadMessages()", <?php echo $this->getConfig('MESSAGES_REFRESH_DELAY'); ?>);
 }
 
 // -->
@@ -157,16 +162,16 @@ if (loadMessagesXHRO) {
 
 // Display messages
 
-echo "<div id=\"messages\" class=\"messages\">\r\n\r\n";
-foreach ($messages as $message) {
+echo "<div id=\"<?php echo $iname; ?>messages\" class=\"messages\">\r\n\r\n";
+foreach ($this->getInput('messages') as $message) {
     echo "<div class=\"messageblock\">\r\n";
-    echo "<div class=\"header\">\r\n";
-    echo "<div class=\"datetime\">" . $message["datetime"] . "</div>\r\n";
-    echo "<div class=\"username\"><b>" . $message["name"] . "</b> <i>said...</i></div>\r\n";
-    echo "</div>\r\n";
-    echo "<div class=\"messagetext\">\r\n";
-    echo $message["message"] . "\r\n";
-    echo "</div>\r\n";
+    echo "  <div class=\"header\">\r\n";
+    echo "    <div class=\"datetime\">" . $message["datetime"] . "</div>\r\n";
+    echo "    <div class=\"username\"><b>" . $message["name"] . "</b> <i>said...</i></div>\r\n";
+    echo "  </div>\r\n";
+    echo "  <div class=\"messagetext\">\r\n";
+    echo       $message["message"] . "\r\n";
+    echo "  </div>\r\n";
     echo "</div>\r\n\r\n";
 }
 echo "</div>\r\n";
@@ -175,23 +180,23 @@ echo "</div>\r\n";
 
 ?>
 
-<form name="frmsendmessage" method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>" onsubmit="return sendMessage()">
+<form name="<?php echo $iname; ?>frmsendmessage" method="post" action="<?php echo $this->getInput('self'); ?>" onsubmit="return <?php echo $iname; ?>sendMessage()">
 <input type="hidden" name="hc" value="send">
 <div class="sendmessage">
 <table>
     <tr>
-        <th align="right" valign="top"><label for="sendname">Name</label></th>
-        <td align="left" valign="top"><input type="text" id="sendname" name="sendname" value="<?php echo $getname; ?>" size="32" maxlength="255"></td>
+        <th align="right" valign="top"><label for="<?php echo $iname; ?>sendname">Name</label></th>
+        <td align="left" valign="top"><input type="text" id="<?php echo $iname; ?>sendname" name="sendname" value="<?php echo $this->getInput('name'); ?>" size="32" maxlength="255"></td>
     </tr>
     <tr>
-        <th align="right" valign="top"><label for="sendmessage">Message</label></th>
-        <td align="left" valign="top"><textarea id="sendmessage" name="sendmessage" cols="40" rows="4" maxlength="4096"></textarea></td>
+        <th align="right" valign="top"><label for="<?php echo $iname; ?>sendmessage">Message</label></th>
+        <td align="left" valign="top"><textarea id="<?php echo $iname; ?>sendmessage" name="sendmessage" cols="40" rows="4" maxlength="4096"></textarea></td>
     </tr>
     <tr>
         <th align="right" valign="top"></th>
         <td align="left" valign="top">
-            <input id="sendsubmit" type="submit" value="Send"> <input id="sendreset" type="reset" value="Clear"> 
-            <span id="sendstatus"><?php echo $messagestatus; ?></span>
+            <input id="<?php echo $iname; ?>sendsubmit" type="submit" value="Send"> <input id="<?php echo $iname; ?>sendreset" type="reset" value="Clear"> 
+            <span id="<?php echo $iname; ?>sendstatus"><?php echo $this->getInput('status'); ?></span>
         </td>
     </tr>
 </table>
@@ -205,25 +210,25 @@ echo "</div>\r\n";
 
 var sOrigName = "<?php echo $getname; ?>";
 
-function validateSendMessage() {
-    var frm = document.forms["frmsendmessage"];
+function <?php echo $iname; ?>validateSendMessage() {
+    var frm = document.forms["<?php echo $iname; ?>frmsendmessage"];
     var valid = false;
     frm.sendname.value.trim();
     frm.sendmessage.value.trim();
     if ((frm.sendname.value!="")&&(frm.sendmessage.value!="")) valid = true;
     if (frm.sendname.value>255) valid = false;
     if (frm.sendmessage.value>4096) valid = false;
-    document.getElementById("sendsubmit").disabled = (!valid) ? true : false;
-    document.getElementById("sendreset").disabled = ((frm.sendmessage.value=="")&&(frm.sendname.value==sOrigName)) ? true : false;
+    document.getElementById("<?php echo $iname; ?>sendsubmit").disabled = (!valid) ? true : false;
+    document.getElementById("<?php echo $iname; ?>sendreset").disabled = ((frm.sendmessage.value=="")&&(frm.sendname.value==sOrigName)) ? true : false;
     return valid;
 }
 
-function handleNameKey(e) {
+function <?php echo $iname; ?>handleNameKey(e) {
     var eEvent = e ? e : window.event;
-    validateSendMessage();
+    <?php echo $iname; ?>validateSendMessage();
 }
 
-function handleMessageKey(e) {
+function <?php echo $iname; ?>handleMessageKey(e) {
     var eEvent = e ? e : window.event;
     if ((eEvent.keyCode==13)&&(!eEvent.shiftKey)) {
         if (e) {
@@ -231,21 +236,21 @@ function handleMessageKey(e) {
         } else {
             eEvent.returnValue = false;
         }
-        sendMessage();
+        <?php echo $iname; ?>sendMessage();
     } else {
-        validateSendMessage();
+        <?php echo $iname; ?>validateSendMessage();
     }
 }
 
-document.getElementById("sendname").onfocus = handleNameKey;
-document.getElementById("sendname").onblur = handleNameKey;
-document.getElementById("sendname").onchange = handleNameKey;
-document.getElementById("sendname").onkeypress = handleNameKey;
-document.getElementById("sendmessage").onfocus = handleMessageKey;
-document.getElementById("sendmessage").onblur = handleMessageKey;
-document.getElementById("sendmessage").onchange = handleMessageKey;
-document.getElementById("sendmessage").onkeypress = handleMessageKey;
-validateSendMessage();
+document.getElementById("<?php echo $iname; ?>sendname").onfocus = <?php echo $iname; ?>handleNameKey;
+document.getElementById("<?php echo $iname; ?>sendname").onblur = <?php echo $iname; ?>handleNameKey;
+document.getElementById("<?php echo $iname; ?>sendname").onchange = <?php echo $iname; ?>handleNameKey;
+document.getElementById("<?php echo $iname; ?>sendname").onkeypress = <?php echo $iname; ?>handleNameKey;
+document.getElementById("<?php echo $iname; ?>sendmessage").onfocus = <?php echo $iname; ?>handleMessageKey;
+document.getElementById("<?php echo $iname; ?>sendmessage").onblur = <?php echo $iname; ?>handleMessageKey;
+document.getElementById("<?php echo $iname; ?>sendmessage").onchange = <?php echo $iname; ?>handleMessageKey;
+document.getElementById("<?php echo $iname; ?>sendmessage").onkeypress = <?php echo $iname; ?>handleMessageKey;
+<?php echo $iname; ?>validateSendMessage();
 
 // -->
 </script>
