@@ -1,11 +1,15 @@
 <?php
 namespace DarkChat;
-require_once __DIR__ . '/../../vendor/autoload.php'; // Autoload files using Composer autoload
+// Autoload files using Composer autoload
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 
 use DarkChat\Config;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * phpunit test to test if the configuration can be loaded
+ */
 class ConfigTest extends TestCase
 {
 

@@ -1,4 +1,7 @@
 <?php
+/**
+ * This file is used by the Chat class for rendering HTML
+ */
 
 $iname = $this->getInput('instance');
 ?>

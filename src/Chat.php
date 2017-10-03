@@ -1,30 +1,37 @@
 <?php
 namespace DarkChat;
-require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Composer autoload
+// Autoload files using Composer autoload
+require_once __DIR__ . '/../vendor/autoload.php';
+
 
 
 use DarkChat\Database;
 
+/**
+ * Chat class
+ * 
+ * Invokes the core functionality
+ * 
+ * try Chat:load();
+ */
 class Chat extends Database
 {
     protected $input;
 
     public function __construct() {
         parent::__construct();
-        $this->input = $this->loadInput();
+        $this->input = $this->loadDefaultInput();
     }
 
-    public static function load($name = '', $url='', $command='') {
+    public static function load($input) {
         $instance = new self();
-        $instance->setInstance($name);
-        $command = $command=='' ? $instance->getInput('command') : $command;
-        if ($url!='') $instance->setInput('self', $url);
-        $instance->do($command);
+        $instance->loadInput($input);
+        $instance->go();
         return $instance;
     }
 
-    public function do($command = '') {
-        switch ($command) {
+    public function go() {
+        switch ($this->getInput('command')) {
             case 'xmlmessages':
                 $this->displayMessagesXML();
                 break;
@@ -42,8 +49,12 @@ class Chat extends Database
 
     protected function loadInputVar($varname) {
         $data = '';
-        if (array_key_exists($varname, $_GET)) $data = htmlspecialchars($_GET[$varname]);
-        if (array_key_exists($varname, $_POST)) $data = htmlspecialchars($_POST[$varname]);
+        if (array_key_exists($varname, $_GET)) {
+            $data = htmlspecialchars($_GET[$varname]);
+        }
+        if (array_key_exists($varname, $_POST)) {
+            $data = htmlspecialchars($_POST[$varname]);
+        }
         return $data;
     }
 
@@ -51,8 +62,8 @@ class Chat extends Database
         return $_SERVER[$varname];
     }
 
-    protected function loadInput() {
-        return array(
+    protected function loadDefaultInput() {
+        return [
             'command' => $this->loadInputVar('hc'),
             'name' => $this->loadInputVar('sendname'),
             'message' => $this->loadInputVar('sendmessage'),
@@ -63,7 +74,21 @@ class Chat extends Database
             'useragent' => $this->loadServerVar('HTTP_USER_AGENT'),
             'self' => $this->loadServerVar('PHP_SELF'),
             'messages' => false
-        );
+        ];
+    }
+    
+    protected function loadInput($input) {
+        if (is_array($input)) {
+            if(isset($input['name'])) {
+                $this->setInstance($input['name']);
+            }
+            if(isset($input['url'])) {
+                $this->setInput('self', $input['url']);
+            }
+            if(isset($input['command'])) {
+                $this->setInput('command', $input['command']);
+            }
+        }
     }
 
     public function getInput($name) {
@@ -83,7 +108,14 @@ class Chat extends Database
         $dateTime = new \DateTime ($time, new \DateTimeZone('UTC'));
         // convert to users $offset time
         $offset = $this->getInput('tzoffset');
-        if ($offset) $dateTime->setTimezone(new \DateTimeZone($offset < 0 ? $offset : '+' . $offset));
+        if ($offset) 
+        {
+            $dateTime->setTimezone(
+                new \DateTimeZone(
+                    $offset < 0 ? $offset : '+' . $offset
+                )
+            );
+        }
         // make pretty and return
         return $dateTime->format($this->getConfig('TIME_FORMAT'));
     }
@@ -91,18 +123,21 @@ class Chat extends Database
     protected function getMessagesXML() {
         $messages = $this->listDbMessages();
         $sXML = "<messagedata>\r\n";
-        // a hash of the last message time is returned to know when rendering is acutally needed
-        $sXML .= "    <messages lastmodified=\"" . $this->getFormattedTime($messages[0]["date_time"])
+        // a hash of the last message time is returned to know
+        //  when rendering is acutally needed
+        $sXML .= "    <messages lastmodified=\"" .
+            $this->getFormattedTime($messages[0]["date_time"])
              . "\" lmhash=\"" . md5($messages[0]["date_time"]) . "\">\r\n";
         // return all messages to display
         foreach ($messages as $message) {
             $sXML .= "        <message>\r\n";
-            $sXML .= "            <date_time>" . $this->getFormattedTime($message["date_time"]) .
+            $sXML .= "            <date_time>" . 
+                $this->getFormattedTime($message["date_time"]) .
                 "</date_time>\r\n";
-            $sXML .= "            <sendername><![CDATA[" . stripslashes($message["name"]) .
-                 "]]></sendername>\r\n";
-            $sXML .= "            <messagetext><![CDATA[" . stripslashes($message["message"]) . 
-                "]]></messagetext>\r\n";
+            $sXML .= "            <sendername><![CDATA[" . 
+                stripslashes($message["name"]) . "]]></sendername>\r\n";
+            $sXML .= "            <messagetext><![CDATA[" . 
+                stripslashes($message["message"]) . "]]></messagetext>\r\n";
             $sXML .= "        </message>\r\n";
         }
         $sXML .= "    </messages>\r\n";
@@ -116,7 +151,8 @@ class Chat extends Database
 
         foreach ($messages as $message) {
             $newmessage = $message;
-            $newmessage['date_time'] = $this->getFormattedTime($message['date_time']);
+            $newmessage['date_time'] = 
+                $this->getFormattedTime($message['date_time']);
             $webmessages[] = $newmessage;
         }
         return $webmessages;
@@ -176,14 +212,17 @@ class Chat extends Database
     }
 
     protected function sendHTMLMessage() {
-        if (($this->getInput('name')!='') && ($this->getInput('message')!='')) {
+        if (
+            ($this->getInput('name')!='')
+            && ($this->getInput('message')!='')
+        ) {
             if ($this->autoSendMessage()) {
-		$this->setInput('status', 'Message sent');
+                $this->setInput('status', 'Message sent');
             } else {
-		$this->setInput('status', 'Message NOT sent');
+                $this->setInput('status', 'Message NOT sent');
             }
         } else {
-	    $this->setInput('status', 'Message NOT sent');
+            $this->setInput('status', 'Message NOT sent');
         }
         $this->renderHTML();
     }

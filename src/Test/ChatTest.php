@@ -1,11 +1,15 @@
 <?php
 namespace DarkChat;
-require_once __DIR__ . '/../../vendor/autoload.php'; // Autoload files using Composer autoload
+// Autoload files using Composer autoload
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 
 use DarkChat\Config;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * phpunit test to test if messages can be sent and received
+ */
 class ChatTest extends TestCase
 {
 
@@ -19,7 +23,9 @@ class ChatTest extends TestCase
         $_GET['tzoffset'] = '11';
 
         $this->setOutputCallback(function() {});
-        $chat = Chat::load('test');
+        $chat = Chat::load([
+            'name' => 'test'
+        ]);
 
         $this->assertEquals( 'Message sent', $chat->getInput('status'));
     }
@@ -34,7 +40,9 @@ class ChatTest extends TestCase
         $_GET['tzoffset'] = '11';
 
         //$this->setOutputCallback(function() {});
-        $chat = Chat::load('test');
+        $chat = Chat::load([
+            'name' => 'test'
+        ]);
 
         $this->assertArrayHasKey('date_time', $chat->getInput('messages')[0]);
     }

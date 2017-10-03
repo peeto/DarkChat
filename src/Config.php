@@ -1,8 +1,14 @@
 <?php
 namespace DarkChat;
-require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Composer autoload
+// Autoload files using Composer autoload
+require_once __DIR__ . '/../vendor/autoload.php';
 
 
+/**
+ * Config class
+ * 
+ * Loads the configuration for DarkChat
+ */
 class Config
 {
     protected $config;
