@@ -16,6 +16,7 @@ class ChatTest extends TestCase
         $_GET['hc'] = 'send';
         $_GET['sendname'] = 'phpunit';
         $_GET['sendmessage'] = 'Message from phpunit.';
+        $_GET['tzoffset'] = '11';
 
         $this->setOutputCallback(function() {});
         $chat = Chat::load('test');
@@ -30,8 +31,9 @@ class ChatTest extends TestCase
         $_GET['hc'] = '';
         $_GET['sendname'] = 'phpunit';
         $_GET['sendmessage'] = 'Message from phpunit.';
+        $_GET['tzoffset'] = '11';
 
-        $this->setOutputCallback(function() {});
+        //$this->setOutputCallback(function() {});
         $chat = Chat::load('test');
 
         $this->assertArrayHasKey('date_time', $chat->getInput('messages')[0]);

@@ -78,27 +78,31 @@ class Chat extends Database
         $this->setInput('instance', $name);
     }
 
-    protected function getFormattedTime($time, $offset) {
+    protected function getFormattedTime($time) {
         // times are stored in UTC
         $dateTime = new \DateTime ($time, new \DateTimeZone('UTC'));
         // convert to users $offset time
+        $offset = $this->getInput('tzoffset');
         if ($offset) $dateTime->setTimezone(new \DateTimeZone($offset < 0 ? $offset : '+' . $offset));
         // make pretty and return
         return $dateTime->format($this->getConfig('TIME_FORMAT'));
     }
 
-    protected function getMessagesXML($timeoffset = 0) {
+    protected function getMessagesXML() {
         $messages = $this->listDbMessages();
         $sXML = "<messagedata>\r\n";
         // a hash of the last message time is returned to know when rendering is acutally needed
-        $sXML .= "    <messages lastmodified=\"" . $this->getFormattedTime($messages[0]["date_time"], 
-            $timeoffset) . "\" lmhash=\"" . md5($messages[0]["date_time"]) . "\">\r\n";
+        $sXML .= "    <messages lastmodified=\"" . $this->getFormattedTime($messages[0]["date_time"])
+             . "\" lmhash=\"" . md5($messages[0]["date_time"]) . "\">\r\n";
         // return all messages to display
         foreach ($messages as $message) {
             $sXML .= "        <message>\r\n";
-            $sXML .= "            <date_time>" . $this->getFormattedTime($message["date_time"], $timeoffset) . "</date_time>\r\n";
-            $sXML .= "            <sendername><![CDATA[" . stripslashes($message["name"]) . "]]></sendername>\r\n";
-            $sXML .= "            <messagetext><![CDATA[" . stripslashes($message["message"]) . "]]></messagetext>\r\n";
+            $sXML .= "            <date_time>" . $this->getFormattedTime($message["date_time"]) .
+                "</date_time>\r\n";
+            $sXML .= "            <sendername><![CDATA[" . stripslashes($message["name"]) .
+                 "]]></sendername>\r\n";
+            $sXML .= "            <messagetext><![CDATA[" . stripslashes($message["message"]) . 
+                "]]></messagetext>\r\n";
             $sXML .= "        </message>\r\n";
         }
         $sXML .= "    </messages>\r\n";
@@ -106,13 +110,13 @@ class Chat extends Database
         return $sXML;
     }
 
-    protected function getMessagesHTML($timeoffset = 0) {
+    protected function getMessagesHTML() {
         $messages = $this->listDbMessages();
         $webmessages = false;
 
         foreach ($messages as $message) {
             $newmessage = $message;
-            $newmessage['date_time'] = $this->getFormattedTime($message['date_time'], $timeoffset);
+            $newmessage['date_time'] = $this->getFormattedTime($message['date_time']);
             $webmessages[] = $newmessage;
         }
         return $webmessages;
@@ -132,7 +136,7 @@ class Chat extends Database
 	header("Last-Modified: " . gmdate("r", strtotime($lmd)));
 	if ($this->getInput('lastmod')!=md5($lmd)) {
 	    echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
-	    echo $this->getMessagesXML($this->getInput('tzoffset'));
+	    echo $this->getMessagesXML();
 	    return (true);
 	} else {
 	    echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
