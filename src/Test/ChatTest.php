@@ -17,9 +17,25 @@ class ChatTest extends TestCase
         $_GET['sendname'] = 'phpunit';
         $_GET['sendmessage'] = 'Message from phpunit.';
 
+        $this->setOutputCallback(function() {});
         $chat = Chat::load('test');
 
-        $this>assertEquals( $chat->getInput('status'), 'Message sent');
+        $this->assertEquals( 'Message sent', $chat->getInput('status'));
     }
+
+    public function testHasMessages()
+    {
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $_SERVER['HTTP_USER_AGENT'] = 'phpunit';
+        $_GET['hc'] = '';
+        $_GET['sendname'] = 'phpunit';
+        $_GET['sendmessage'] = 'Message from phpunit.';
+
+        $this->setOutputCallback(function() {});
+        $chat = Chat::load('test');
+
+        $this->assertArrayHasKey('date_time', $chat->getInput('messages')[0]);
+    }
+
 }
 

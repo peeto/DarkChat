@@ -91,8 +91,8 @@ class Chat extends Database
         $messages = $this->listDbMessages();
         $sXML = "<messagedata>\r\n";
         // a hash of the last message time is returned to know when rendering is acutally needed
-        $sXML .= "    <messages lastmodified=\"" . $this->getFormattedTime($messages[0]["date_time"], $timeoffset) .
-                "\" lmhash=\"" . md5($messages[0]["date_time"]) . "\">\r\n";
+        $sXML .= "    <messages lastmodified=\"" . $this->getFormattedTime($messages[0]["date_time"], 
+            $timeoffset) . "\" lmhash=\"" . md5($messages[0]["date_time"]) . "\">\r\n";
         // return all messages to display
         foreach ($messages as $message) {
             $sXML .= "        <message>\r\n";
