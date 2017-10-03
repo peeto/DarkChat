@@ -33,7 +33,7 @@ class Database extends Config
     protected function createDbTables() {
         $this->db->query(
             "CREATE TABLE messages (name varchar(255) NOT NULL default ''," .
-            " messagetext varchar(4096) NOT NULL default '',modified_time" . 
+            " messagetext varchar(4096) NOT NULL default '', modified_time" . 
             " datetime NOT NULL default '0000-00-00 00:00:00', modified_ip" .
             " varchar(64) NOT NULL default '', modified_agent varchar(255)" . 
             " NOT NULL default '', expired int(1) NOT NULL default 0 );"
@@ -42,12 +42,13 @@ class Database extends Config
 
     protected function autoConfigure()
     {
-        // build the database if it doesn't exist
         if (!file_exists(__DIR__ . $this->getConfig('DATABASE_LOCATION'))) {
+            // build the database if it doesn't exist
             $this->createDb();
             $this->initDb();
             $this->createDbTables();
         } else {
+            // database exists, connect
             $this->initDb();
         }
     }
@@ -67,7 +68,7 @@ class Database extends Config
         if ($query) 
         {
             // SQLite3 seems terrible compared to SQLite2
-            while ($data[] = $query->fetchArray(SQLITE3_ASSOC));
+            while ($data[] = $query->fetchArray(SQLITE3_ASSOC)) {};
             array_pop($data);
         }
         return $data;
@@ -86,20 +87,22 @@ class Database extends Config
         // (because disk space)
         $result = $this->db->query("SELECT COUNT(*) FROM messages");
         if($result->fetchArray()[0] >= $this->getConfig('NUM_MESSAGES_KEEP')) {
-            $this->db->query(
+            $this->db->exec(
                 "DELETE FROM messages WHERE modified_time <" .
                 " (SELECT modified_time FROM messages ORDER BY modified_time" .
                 " DESC LIMIT 1 OFFSET " .
                 ($this->getConfig('NUM_MESSAGES_KEEP') - 1) . ");"
             );
         }
-    } 
+    }
 
-    protected function dbEncodeTextMax($text, $max)
+    protected function dbEncodeTextMax(string $text, int $max)
     {
         // keep a parameter under it's size limit
         // but with intelligent sql encoding
-        if (strlen($text)>$max) $text = substr($text, 0, $max);
+        if (strlen($text)>$max) {
+            $text = substr($text, 0, $max);
+        }
         $encText = $this->db->escapeString($text);
         // keep encoded data within limits
         while (strlen($encText)>$max) {
@@ -136,7 +139,7 @@ class Database extends Config
         ) {
             $this->removeOldMessages();
             if (
-                $this->db->query("INSERT INTO messages VALUES ('" . $name .
+                $this->db->exec("INSERT INTO messages VALUES ('" . $name .
                     "', '". $messagetext . "', '" . gmdate("c") .
                     "', '" . $userip . "', '" . $useragent . "', 0);")
             ) {

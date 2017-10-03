@@ -4,7 +4,6 @@ namespace DarkChat;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 
-
 use DarkChat\Database;
 
 /**
@@ -23,6 +22,16 @@ class Chat extends Database
         $this->input = $this->loadDefaultInput();
     }
 
+    /**
+     * Helper/factory for loading DarkChat
+     * 
+     * see loadInput() to override input options
+     * otherwise loadDefaultInput() loads options
+     * from the web server
+     * 
+     * @param array $input
+     * @return \self
+     */
     public static function load($input) {
         $instance = new self();
         $instance->loadInput($input);
@@ -30,6 +39,10 @@ class Chat extends Database
         return $instance;
     }
 
+    /**
+     * go() runs DarkChat
+     * automatically called from load()
+     */
     public function go() {
         switch ($this->getInput('command')) {
             case 'xmlmessages':
@@ -47,7 +60,26 @@ class Chat extends Database
         }
     }
 
-    protected function loadInputVar($varname) {
+    public function getInput($name) {
+        return $this->input[$name];
+    }
+
+    public function setInput($name, $value) {
+        return $this->input[$name] = $value;
+    }
+
+    /**
+     * Allows HTML and Javascript to be prefixed with a name
+     * so multiple DakChat instances can run on the same web page
+     * (optional)
+     * 
+     * @param string $name
+     */
+    public function setInstance($name) {
+        $this->setInput('instance', $name);
+    }
+
+    protected function loadInputVar(string $varname) {
         $data = '';
         if (array_key_exists($varname, $_GET)) {
             $data = htmlspecialchars($_GET[$varname]);
@@ -58,7 +90,7 @@ class Chat extends Database
         return $data;
     }
 
-    protected function loadServerVar($varname) {
+    protected function loadServerVar(string $varname) {
         return $_SERVER[$varname];
     }
 
@@ -67,12 +99,12 @@ class Chat extends Database
             'command' => $this->loadInputVar('hc'),
             'name' => $this->loadInputVar('sendname'),
             'message' => $this->loadInputVar('sendmessage'),
-            'status' => '',
             'lastmod' => $this->loadInputVar('lmts'),
             'tzoffset' => $this->loadInputVar('tzoffset'),
             'addr' => $this->loadServerVar('REMOTE_ADDR'),
             'useragent' => $this->loadServerVar('HTTP_USER_AGENT'),
             'self' => $this->loadServerVar('PHP_SELF'),
+            'status' => '',
             'messages' => false
         ];
     }
@@ -89,18 +121,6 @@ class Chat extends Database
                 $this->setInput('command', $input['command']);
             }
         }
-    }
-
-    public function getInput($name) {
-        return $this->input[$name];
-    }
-
-    public function setInput($name, $value) {
-        return $this->input[$name] = $value;
-    }
-
-    public function setInstance($name) {
-        $this->setInput('instance', $name);
     }
 
     protected function getFormattedTime($time) {
@@ -159,25 +179,25 @@ class Chat extends Database
     }
 
     protected function xmlHeaderNoCache() {
-	header("Content-type: text/xml");
-	header("Cache-Control: no-cache");
-	header("Expires: -1");
+        header("Content-type: text/xml");
+        header("Cache-Control: no-cache");
+        header("Expires: -1");
         header("Pragma: no-cache");
     }
 
     protected function displayMessagesXML() {
         // Display messages as XML
         $this->xmlHeaderNoCache();
-	$lmd = $this->getLastModifiedDate();
-	header("Last-Modified: " . gmdate("r", strtotime($lmd)));
-	if ($this->getInput('lastmod')!=md5($lmd)) {
-	    echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
-	    echo $this->getMessagesXML();
-	    return (true);
-	} else {
-	    echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
-	    echo "<messagedata>\r\n";
-	    echo "</messagedata>\r\n";
+        $lmd = $this->getLastModifiedDate();
+        header("Last-Modified: " . gmdate("r", strtotime($lmd)));
+        if ($this->getInput('lastmod')!=md5($lmd)) {
+            echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
+            echo $this->getMessagesXML();
+            return (true);
+        } else {
+            echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
+            echo "<messagedata>\r\n";
+            echo "</messagedata>\r\n";
             return (true);
         }
     }
@@ -190,25 +210,25 @@ class Chat extends Database
     }
 
     protected function sendMessageXML() {
-	// Send message as and return response in XML
-	if (($this->getInput('name')!='') && ($this->getInput('message')!='')) {
+        // Send message as and return response in XML
+        if (($this->getInput('name')!='') && ($this->getInput('message')!='')) {
             if ($this->autoSendMessage()) {
                 header("HTTP/1.1 201 Created");
                 $this->xmlHeaderNoCache();
-		echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
-		echo "<status>received</status>";
-	    } else {
-		header("HTTP/1.1 500 Internal Server Error");
+                echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
+                echo "<status>received</status>";
+            } else {
+                header("HTTP/1.1 500 Internal Server Error");
                 $this->xmlHeaderNoCache();
-		echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
-		echo "<status>failed</status>";
-	    }
-	} else {
-	    header("HTTP/1.1 400 Bad Request");
+                echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
+                echo "<status>failed</status>";
+            }
+        } else {
+            header("HTTP/1.1 400 Bad Request");
             $this->xmlHeaderNoCache();
-	    echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
-	    echo "<status>invalid data</status>";
-	}
+            echo "<" . "?xml version=\"1.0\" encoding=\"UTF-8\"?" . ">\r\n";
+            echo "<status>invalid data</status>";
+        }
     }
 
     protected function sendHTMLMessage() {
@@ -227,6 +247,9 @@ class Chat extends Database
         $this->renderHTML();
     }
 
+    /**
+     * Renders the web page, see Web.php
+     */
     protected function renderHTML() {
         $this->setInput('messages', $this->getMessagesHTML());
         include(__DIR__ . '/Web.php');
