@@ -1,7 +1,8 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Composer autoload
+// Autoload files using Composer autoload
+require_once __DIR__ . '/../vendor/autoload.php';
 
-use DarkChat\Chat;
+use peeto\DarkChat\Chat;
 
 Chat::load([
     'name' => 'test'

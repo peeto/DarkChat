@@ -1,10 +1,10 @@
 <?php
-namespace DarkChat;
+namespace peeto\DarkChat;
 // Autoload files using Composer autoload
 require_once __DIR__ . '/../vendor/autoload.php';
 
 
-use DarkChat\Database;
+use peeto\DarkChat\Database;
 
 /**
  * Chat class

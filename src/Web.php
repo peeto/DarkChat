@@ -1,4 +1,5 @@
 <?php
+namespace peeto\DarkChat;
 /**
  * This file is used by the Chat class for rendering HTML
  */

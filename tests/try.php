@@ -1,11 +1,12 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Composer autoload
+// Autoload files using Composer autoload
+require_once __DIR__ . '/../vendor/autoload.php';
 
-use DarkChat\Chat;
+use peeto\DarkChat\Chat;
 ?>
 <!DOCTYPE html>
 <!--
-Copyright (C) 2017 chris
+Copyright (C) 2017 Chris Petersen
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
