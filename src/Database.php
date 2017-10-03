@@ -1,6 +1,12 @@
 <?php
+namespace DarkChat;
+require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Composer autoload
 
-class DarkChatDatabase extends DarkChatConfig
+
+use DarkChat\Config;
+use SQLite3;
+
+class Database extends Config
 {
     protected $db;
 

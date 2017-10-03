@@ -10,11 +10,12 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=7.0"
+        "php": ">=7.0",
+        "ext-sqlite3": "*"
     },
     "autoload": {
-        "psr-0": {
-            "DarkChat": "src/"
+        "psr-4": {
+            "DarkChat\\": "src/"
         }
     }
 }
