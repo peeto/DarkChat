@@ -77,7 +77,7 @@ class Database extends Config
     protected function getLastModifiedDate() {
         $result = $this->db->query(
             "SELECT modified_time FROM messages WHERE expired=0" . 
-            " ORDER BY modified_order DESC LIMIT 1;"
+            " ORDER BY modified_time DESC LIMIT 1;"
         );
         return $result->fetchArray()['modified_time'];
     }

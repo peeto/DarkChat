@@ -85,7 +85,7 @@ function <?php echo $iname; ?>sendMessageXHROHandler() {
         var oMessageSendButtonUI = document.getElementById("<?php echo $iname; ?>sendsubmit");
         var oMessageResetButtonUI = document.getElementById("<?php echo $iname; ?>sendreset");
         var oXML = <?php echo $iname; ?>sendMessageXHRO.responseXML;
-        var oXMLData = oXML.getElementsByTagName("<?php echo $iname; ?>status");
+        var oXMLData = oXML.getElementsByTagName("status");
         var sStatus = oXMLData[0].childNodes[0].data;
         if (sStatus=="received") {
             oMessageStatusUI.innerHTML = "Message sent";
@@ -95,14 +95,14 @@ function <?php echo $iname; ?>sendMessageXHROHandler() {
         oMessageSendButtonUI.disabled = false;
         oMessageResetButtonUI.disabled = false;
         oMessageSendButtonUI.value = "Send";
-        oSendStatusTimer = window.setTimeout("<?php echo $iname; ?>clearSendStatus()", <?php echo $this->getConfig('UI_STATUS_SHOW_TIME'); ?>);
+        <?php echo $iname; ?>oSendStatusTimer = window.setTimeout("<?php echo $iname; ?>clearSendStatus()", <?php echo $this->getConfig('UI_STATUS_SHOW_TIME'); ?>);
         <?php echo $iname; ?>loadMessages();
     }
 }
 
 function <?php echo $iname; ?>loadMessages() {
     var dDate = new Date();
-    var tzoffset = dDate.getTimezoneOffset() / 60;
+    var tzoffset = 0 - (dDate.getTimezoneOffset() / 60);
     <?php echo $iname; ?>loadMessagesXHRO = getXMLHTTPRequestObject();
     <?php echo $iname; ?>loadMessagesXHRO.onreadystatechange = <?php echo $iname; ?>loadMessagesXHROHandler;
     <?php echo $iname; ?>loadMessagesXHRO.open("GET", "<?php echo $this->getInput('xml_message_route'); ?>?hc=xmlmessages&tzoffset=" + tzoffset + "&lmts=" + <?php echo $iname; ?>sLastMessageHash, true);
@@ -131,9 +131,9 @@ function <?php echo $iname; ?>sendMessage() {
         return false;
     } else {
         var dDate = new Date();
-        var tzoffset = dDate.getTimezoneOffset() / 60;
+        var tzoffset = 0 - (dDate.getTimezoneOffset() / 60);
         var sPostData = "hc=xmlsendmessage&tzoffset=" + tzoffset  + "&sendname=" + encodeURIComponent(oMessageNameUI.value) + "&sendmessage=" + encodeURIComponent(oMessageTextUI.value);
-        window.clearTimeout(oSendStatusTimer);
+        window.clearTimeout(<?php echo $iname; ?>oSendStatusTimer);
         <?php echo $iname; ?>sendMessageXHRO = getXMLHTTPRequestObject();
         <?php echo $iname; ?>sendMessageXHRO.onreadystatechange = <?php echo $iname; ?>sendMessageXHROHandler;
         <?php echo $iname; ?>sendMessageXHRO.open("POST", "<?php echo $this->getInput('xml_send_message_route'); ?>", true);
@@ -143,7 +143,7 @@ function <?php echo $iname; ?>sendMessage() {
         <?php echo $iname; ?>sendMessageXHRO.send(sPostData);
         oMessageTextUI.value = "";
         oMessageSendButtonUI.value = "Sending message...";
-        oSendStatusTimer = window.setTimeout("<?php echo $iname; ?>clearSendStatus()", <?php echo $this->getConfig('UI_STATUS_SHOW_TIME'); ?>);
+        <?php echo $iname; ?>oSendStatusTimer = window.setTimeout("<?php echo $iname; ?>clearSendStatus()", <?php echo $this->getConfig('UI_STATUS_SHOW_TIME'); ?>);
         oMessageTextUI.focus();
         sOrigName = oMessageNameUI.value;
         <?php echo $iname; ?>validateSendMessage();
