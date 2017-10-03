@@ -1,8 +1,4 @@
 <?php
-namespace peeto/DarkChat;
-
-use DarkChatConfig;
-
 
 class DarkChatDatabase extends DarkChatConfig
 {
@@ -14,7 +10,11 @@ class DarkChatDatabase extends DarkChatConfig
     }
 
     protected function initDb() {
-        $this->db = new SQLite3($this->getConfig('DATABASE_LOCATION'), 0666);
+        $this->db = new SQLite3(__DIR__ . $this->getConfig('DATABASE_LOCATION', SQLITE3_OPEN_READWRITE));
+    }
+
+    protected function createDb() {
+        $db = new SQLite3(__DIR__ . $this->getConfig('DATABASE_LOCATION'));
     }
 
     protected function createDbTables() {
@@ -28,9 +28,12 @@ class DarkChatDatabase extends DarkChatConfig
     protected function autoConfigure()
     {
         // build the database if it doesn't exist
-        if (!file_exists($this->getConfig('DATABASE_LOCATION'))) {
+        if (!file_exists(__DIR__ . $this->getConfig('DATABASE_LOCATION'))) {
+            $this->createDb();
             $this->initDb();
             $this->createDbTables();
+        } else {
+            $this->initDb();
         }
     }
 
@@ -46,7 +49,7 @@ class DarkChatDatabase extends DarkChatConfig
         $result = null;
         if ($query) 
         {
-            $result = $query->fetchAll(SQLITE_ASSOC);
+            $result = $query->fetchArray(SQLITE3_ASSOC);
         }
         return $result;
     }
@@ -97,7 +100,7 @@ class DarkChatDatabase extends DarkChatConfig
     }
 
     protected function sendDbMessage($name, $messagetext, $userip, $useragent) {
-        $this->encodeMessage($name, $messagetext, $userip, $useragent ;
+        $this->encodeMessage($name, $messagetext, $userip, $useragent);
         if (
             (strlen($name)<=255) && (strlen($messagetext)<=4096) && (strlen($userip)<=64) && (strlen($useragent)<=255)
             && (strlen($name)>0) && (strlen($messagetext)>0) && (strlen($userip)>0) && (strlen($useragent)>0)

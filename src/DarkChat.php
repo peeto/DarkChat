@@ -1,14 +1,10 @@
 <?php
-namespace peeto/DarkChat;
-
-use DarkChatDatabase;
-
 
 class DarkChat extends DarkChatDatabase
 {
     protected $input;
 
-    public fucntion __construct() {
+    public function __construct() {
         parent::__construct();
         $this->input = $this->loadInput();
     }
@@ -16,14 +12,14 @@ class DarkChat extends DarkChatDatabase
     public static function load($name = '', $url='', $command='') {
         $instance = new self();
         $instance->setInstance($name);
-        $command = $command=='' ? $instance->getInput('$command') : $command;
-        if ($url!='') $instance->setinput('self', $url);
+        $command = $command=='' ? $instance->getInput('command') : $command;
+        if ($url!='') $instance->setInput('self', $url);
         $instance->do($command);
         return $instance;
     }
 
     public function do($command = '') {
-        switch ($command)) {
+        switch ($command) {
             case 'xmlmessages':
                 $this->displayMessagesXML();
                 break;
@@ -39,7 +35,7 @@ class DarkChat extends DarkChatDatabase
         }
     }
 
-    protected fuction loadInputVar($varname) {
+    protected function loadInputVar($varname) {
         $data = '';
         if (array_key_exists($varname, $_GET)) $data = htmlspecialchars($_GET[$varname]);
         if (array_key_exists($varname, $_POST)) $data = htmlspecialchars($_POST[$varname]);
@@ -52,13 +48,13 @@ class DarkChat extends DarkChatDatabase
 
     protected function loadInput() {
         return array(
-            'command' => $this->loadInput('hc'),
-            'name' => $this->loadInput('sendname'),
-            'message' => $this->loadInput('sendmessage'),
+            'command' => $this->loadInputVar('hc'),
+            'name' => $this->loadInputVar('sendname'),
+            'message' => $this->loadInputVar('sendmessage'),
             'status' => '',
-            'lastmod' => $this->loadInput('lmts'),
-            'tzoffset' => $this->loadInput('tzoffset'),
-            'addr' => $this->loadServerVar'REMOTE_ADDR'),
+            'lastmod' => $this->loadInputVar('lmts'),
+            'tzoffset' => $this->loadInputVar('tzoffset'),
+            'addr' => $this->loadServerVar('REMOTE_ADDR'),
             'useragent' => $this->loadServerVar('HTTP_USER_AGENT'),
             'self' => $this->loadServerVar('PHP_SELF')
         );
@@ -73,7 +69,7 @@ class DarkChat extends DarkChatDatabase
     }
 
     public function setInstance($name) {
-        $this->setInput('instance') = $name;
+        $this->setInput('instance', $name);
     }
 
     protected function getFormattedTime($time, $offset) {
@@ -86,7 +82,7 @@ class DarkChat extends DarkChatDatabase
     }
 
     protected function getMessagesXML($timeoffset = 0) {
-        $messages = $this->listMessages();
+        $messages = $this->listDbMessages();
         $sXML = "<messagedata>\r\n";
         // a hash of the last message time is returned to know when rendering is acutally needed
         $sXML .= "    <messages lastmodified=\"" . $this->getFormattedTime($messages[0]["datetime"], $timeoffset) .
@@ -133,6 +129,7 @@ class DarkChat extends DarkChatDatabase
             $this->getInput('name'), $this->getInput('message'), 
             $this->getInput('addr'), $this->getInput('useragent')
         )!==false;
+    }
 
     protected function sendMessageXML() {
 	// Send message as and return response in XML
@@ -170,8 +167,8 @@ class DarkChat extends DarkChatDatabase
     }
 
     protected function renderHTML() {
-        $this->setInput('messages', $this->listMessages());
-        include('Web.php');
+        $this->setInput('messages', $this->listDbMessages());
+        include(__DIR__ . '/Web.php');
     }
 }
 

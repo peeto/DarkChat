@@ -1,5 +1,4 @@
 <?php
-namespace peeto/DarkChat;
 
 $iname = $this->getInput('instance');
 ?>
@@ -132,16 +131,16 @@ function <?php echo $iname; ?>sendMessage() {
         var tzoffset = dDate.getTimezoneOffset() / 60;
         var sPostData = "hc=xmlsendmessage&tzoffset=" + tzoffset  + "&sendname=" + encodeURIComponent(oMessageNameUI.value) + "&sendmessage=" + encodeURIComponent(oMessageTextUI.value);
         window.clearTimeout(oSendStatusTimer);
-        sendMessageXHRO = getXMLHTTPRequestObject();
-        sendMessageXHRO.onreadystatechange = sendMessageXHROHandler;
-        sendMessageXHRO.open("POST", "<?php echo $this->getInput('self'); ?>", true);
-        sendMessageXHRO.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        sendMessageXHRO.setRequestHeader("Content-length", sPostData.length);
-        sendMessageXHRO.setRequestHeader("Connection", "close");
-        sendMessageXHRO.send(sPostData);
+        <?php echo $iname; ?>sendMessageXHRO = getXMLHTTPRequestObject();
+        <?php echo $iname; ?>sendMessageXHRO.onreadystatechange = <?php echo $iname; ?>sendMessageXHROHandler;
+        <?php echo $iname; ?>sendMessageXHRO.open("POST", "<?php echo $this->getInput('self'); ?>", true);
+        <?php echo $iname; ?>sendMessageXHRO.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        <?php echo $iname; ?>sendMessageXHRO.setRequestHeader("Content-length", sPostData.length);
+        <?php echo $iname; ?>sendMessageXHRO.setRequestHeader("Connection", "close");
+        <?php echo $iname; ?>sendMessageXHRO.send(sPostData);
         oMessageTextUI.value = "";
         oMessageSendButtonUI.value = "Sending message...";
-        oSendStatusTimer = window.setTimeout("clearSendStatus()", <?php echo $this->getConfig('UI_STATUS_SHOW_TIME'); ?>);
+        oSendStatusTimer = window.setTimeout("<?php echo $iname; ?>clearSendStatus()", <?php echo $this->getConfig('UI_STATUS_SHOW_TIME'); ?>);
         oMessageTextUI.focus();
         sOrigName = oMessageNameUI.value;
         <?php echo $iname; ?>validateSendMessage();
@@ -162,8 +161,8 @@ if (<?php echo $iname; ?>loadMessagesXHRO) {
 
 // Display messages
 
-echo "<div id=\"<?php echo $iname; ?>messages\" class=\"messages\">\r\n\r\n";
-foreach ($this->getInput('messages') as $message) {
+echo "<div id=\"" . $iname . "messages\" class=\"messages\">\r\n\r\n";
+if($this->getInput('messages')) foreach ($this->getInput('messages') as $message) {
     echo "<div class=\"messageblock\">\r\n";
     echo "  <div class=\"header\">\r\n";
     echo "    <div class=\"datetime\">" . $message["datetime"] . "</div>\r\n";
@@ -208,7 +207,7 @@ echo "</div>\r\n";
 <script language="javascript" type="text/javascript">
 <!--
 
-var sOrigName = "<?php echo $getname; ?>";
+var sOrigName = "<?php echo $this->getInput('name'); ?>";
 
 function <?php echo $iname; ?>validateSendMessage() {
     var frm = document.forms["<?php echo $iname; ?>frmsendmessage"];
