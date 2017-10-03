@@ -54,6 +54,9 @@ class Chat extends Database
             case 'send':
                 $this->sendHTMLMessage();
                 break;
+            case 'sendhtml':
+                $this->sendHTMLMessageOnly();
+                break;
             default:
                 $this->renderHTML();
                 break;
@@ -231,7 +234,7 @@ class Chat extends Database
         }
     }
 
-    protected function sendHTMLMessage() {
+    protected function sendHTMLMessageOnly() {
         if (
             ($this->getInput('name')!='')
             && ($this->getInput('message')!='')
@@ -244,6 +247,10 @@ class Chat extends Database
         } else {
             $this->setInput('status', 'Message NOT sent');
         }
+    }
+    
+    protected function sendHTMLMessage() {
+        $this->sendHTMLMessageOnly();
         $this->renderHTML();
     }
 
