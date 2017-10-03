@@ -49,28 +49,29 @@ class Database extends Config
 
     protected function listDbMessages() {
         $query = $this->db->query(
-            "SELECT ROWID as id, name, messagetext AS message, modified_time AS datetime FROM messages" . 
+            "SELECT ROWID as id, name, messagetext AS message, modified_time AS date_time FROM messages" . 
             " WHERE expired=0 ORDER BY modified_time DESC LIMIT " . $this->getConfig('NUM_MESSAGES_DISPLAY') . ";"
         );
-        $result = null;
+        $data = null;
         if ($query) 
         {
-            $result = $query->fetchArray(SQLITE3_ASSOC);
+            while ($data[] = $query->fetchArray(SQLITE3_ASSOC));
+            array_pop($data);
         }
-        return $result;
+        return $data;
     }
 
     protected function getLastModifiedDate() {
         $result = $this->db->query(
             "SELECT modified_time FROM messages WHERE expired=0 ORDER BY modified_order DESC LIMIT 1;"
         );
-        return $result->fetchSingle();
+        return $result->fetchArray()['modified_time'];
     }
 
     protected function removeOldMessages() {
         // automatically detect old messages and delete them, because disk space
         $result = $this->db->query("SELECT COUNT(*) FROM messages");
-        if($result->fetchSingle() >= $this->getConfig('NUM_MESSAGES_KEEP')) {
+        if($result->fetchArray()[0] >= $this->getConfig('NUM_MESSAGES_KEEP')) {
             $this->db->query(
                 "DELETE FROM messages WHERE modified_time < (SELECT modified_time FROM messages" .
                 " ORDER BY modified_time DESC LIMIT 1 OFFSET " . ($this->getConfig('NUM_MESSAGES_KEEP') - 1) . ");"
@@ -82,10 +83,10 @@ class Database extends Config
     {
         // keep a parameter under it's size limit but with intelligent sql encoding
         if (strlen($text)>$max) $text = substr($text, 0, $max);
-        $encText = sqlite_escape_string($text);
+        $encText = $this->db->escapeString($text);
         while (strlen($encText)>$max) {
             $text = substr($text, 0, -1);
-            $encText = sqlite_escape_string($text);
+            $encText = $this->db->escapeString($text);
         }
         return $encText;
     }

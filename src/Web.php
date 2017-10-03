@@ -53,7 +53,7 @@ function <?php echo $iname; ?>loadMessagesXHROHandler() {
                 for (var i = 0; i < oXMLData.length; i++) {
                     sHTML += "<div class=\"messageblock\">\r\n";
                     sHTML += "  <div class=\"header\">\r\n";
-                    sHTML += "      <div class=\"datetime\">" + oXMLData[i].getElementsByTagName("datetime")[0].childNodes[0].data + "</div>\r\n";
+                    sHTML += "      <div class=\"date_time\">" + oXMLData[i].getElementsByTagName("date_time")[0].childNodes[0].data + "</div>\r\n";
                     sHTML += "      <div class=\"username\"><b>" + oXMLData[i].getElementsByTagName("sendername")[0].childNodes[0].data +
                         "</b> <i>said...</i></div>\r\n";
                     sHTML += "  </div>\r\n";
@@ -165,7 +165,7 @@ echo "<div id=\"" . $iname . "messages\" class=\"messages\">\r\n\r\n";
 if($this->getInput('messages')) foreach ($this->getInput('messages') as $message) {
     echo "<div class=\"messageblock\">\r\n";
     echo "  <div class=\"header\">\r\n";
-    echo "    <div class=\"datetime\">" . $message["datetime"] . "</div>\r\n";
+    echo "    <div class=\"date_time\">" . $message["date_time"] . "</div>\r\n";
     echo "    <div class=\"username\"><b>" . $message["name"] . "</b> <i>said...</i></div>\r\n";
     echo "  </div>\r\n";
     echo "  <div class=\"messagetext\">\r\n";
