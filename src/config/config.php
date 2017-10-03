@@ -36,6 +36,26 @@ $config = [
      * How long status messages will display
      * (milliseconds)
      */
-    'UI_STATUS_SHOW_TIME' => 2500
+    'UI_STATUS_SHOW_TIME' => 2500,
+    
+    /**
+     * Route (URL) to override PHP_SELF
+     * (optional)
+     */
+    'DEFAULT_ROUTE' => '',
+    
+    /**
+     * Route (URL) to override PHP_SELF
+     * for loading XML Messages
+     * (optional)
+     */
+    'XML_MESSAGE_ROUTE' => '',
+    
+    /**
+     * Route (URL) to override PHP_SELF
+     * for sending XML Messages
+     * (optional)
+     */
+    'XML_SEND_MESSAGE_ROUTE' => ''
 ];
 

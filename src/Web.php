@@ -105,7 +105,7 @@ function <?php echo $iname; ?>loadMessages() {
     var tzoffset = dDate.getTimezoneOffset() / 60;
     <?php echo $iname; ?>loadMessagesXHRO = getXMLHTTPRequestObject();
     <?php echo $iname; ?>loadMessagesXHRO.onreadystatechange = <?php echo $iname; ?>loadMessagesXHROHandler;
-    <?php echo $iname; ?>loadMessagesXHRO.open("GET", "<?php echo $this->getInput('self'); ?>?hc=xmlmessages&tzoffset=" + tzoffset + "&lmts=" + <?php echo $iname; ?>sLastMessageHash, true);
+    <?php echo $iname; ?>loadMessagesXHRO.open("GET", "<?php echo $this->getInput('xml_message_route'); ?>?hc=xmlmessages&tzoffset=" + tzoffset + "&lmts=" + <?php echo $iname; ?>sLastMessageHash, true);
     <?php echo $iname; ?>loadMessagesXHRO.send(" ");
 }
 
@@ -136,7 +136,7 @@ function <?php echo $iname; ?>sendMessage() {
         window.clearTimeout(oSendStatusTimer);
         <?php echo $iname; ?>sendMessageXHRO = getXMLHTTPRequestObject();
         <?php echo $iname; ?>sendMessageXHRO.onreadystatechange = <?php echo $iname; ?>sendMessageXHROHandler;
-        <?php echo $iname; ?>sendMessageXHRO.open("POST", "<?php echo $this->getInput('self'); ?>", true);
+        <?php echo $iname; ?>sendMessageXHRO.open("POST", "<?php echo $this->getInput('xml_send_message_route'); ?>", true);
         <?php echo $iname; ?>sendMessageXHRO.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         <?php echo $iname; ?>sendMessageXHRO.setRequestHeader("Content-length", sPostData.length);
         <?php echo $iname; ?>sendMessageXHRO.setRequestHeader("Connection", "close");
@@ -182,7 +182,7 @@ echo "</div>\r\n";
 
 ?>
 
-<form name="<?php echo $iname; ?>frmsendmessage" method="post" action="<?php echo $this->getInput('self'); ?>" onsubmit="return <?php echo $iname; ?>sendMessage()">
+<form name="<?php echo $iname; ?>frmsendmessage" method="post" action="<?php echo $this->getInput('route'); ?>" onsubmit="return <?php echo $iname; ?>sendMessage()">
 <input type="hidden" name="hc" value="send">
 <div class="sendmessage">
 <table>

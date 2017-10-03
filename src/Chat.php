@@ -20,12 +20,14 @@ class Chat extends Database
     public function __construct() {
         parent::__construct();
         $this->input = $this->loadDefaultInput();
+        $this->loadDefaultXMLRoutes();
+        $this->overloadRoutesFromConfig();
     }
 
     /**
      * Helper/factory for loading DarkChat
      * 
-     * see loadInput() to override input options
+     * see loadUserInput() to override input options
      * otherwise loadDefaultInput() loads options
      * from the web server
      * 
@@ -34,7 +36,7 @@ class Chat extends Database
      */
     public static function load($input) {
         $instance = new self();
-        $instance->loadInput($input);
+        $instance->loadUserInput($input);
         $instance->go();
         return $instance;
     }
@@ -106,20 +108,54 @@ class Chat extends Database
             'tzoffset' => $this->loadInputVar('tzoffset'),
             'addr' => $this->loadServerVar('REMOTE_ADDR'),
             'useragent' => $this->loadServerVar('HTTP_USER_AGENT'),
-            'self' => $this->loadServerVar('PHP_SELF'),
+            'route' => $this->loadServerVar('PHP_SELF'),
             'status' => '',
             'messages' => false
         ];
     }
     
-    protected function loadInput($input) {
+    protected function loadDefaultXMLRoutes() {
+        $this->setInput('xml_message_route', $this->getInput('route'));
+        $this->setInput('xml_send_message_route', $this->getInput('route'));
+    }
+    
+    protected function overloadRoutesFromConfig() {
+        if ($this->getConfig('DEFAULT_ROUTE') != '') {
+            $this->setInput('route', $this->getConfig('DEFAULT_ROUTE'));
+        }
+        
+        if ($this->getConfig('XML_MESSAGE_ROUTE') != '') {
+            $this->setInput(
+                'xml_message_route', 
+                $this->getConfig('XML_MESSAGE_ROUTE')
+            );
+        }
+        
+        if ($this->getConfig('XML_SEND_MESSAGE_ROUTE') != '') {
+            $this->setInput(
+                'xml_send_message_route', 
+                $this->getConfig('XML_SEND_MESSAGE_ROUTE')
+            );
+        }
+        
+    }
+    
+    protected function loadUserInput($input) {
         if (is_array($input)) {
             if(isset($input['name'])) {
                 $this->setInstance($input['name']);
             }
-            if(isset($input['url'])) {
-                $this->setInput('self', $input['url']);
+            if(isset($input['route'])) {
+                $this->setInput('route', $input['route']);
             }
+            if(isset($input['xml_message_route'])) {
+                $this->setInput('xml_message_route', 
+                    $input['xml_message_route']);
+            }
+            if(isset($input['xml_send_message_route'])) {
+                $this->setInput('xml_send_message_route', 
+                    $input['xml_send_message_route']);
+            }            
             if(isset($input['command'])) {
                 $this->setInput('command', $input['command']);
             }
