@@ -143,20 +143,25 @@ class Chat extends Database
     protected function loadUserInput($input) {
         if (is_array($input)) {
             if(isset($input['name'])) {
+                // change the "instance" name
                 $this->setInstance($input['name']);
             }
             if(isset($input['route'])) {
+                // change the default url
                 $this->setInput('route', $input['route']);
             }
             if(isset($input['xml_message_route'])) {
+                // change where messages ae loaded from in XML 
                 $this->setInput('xml_message_route', 
                     $input['xml_message_route']);
             }
             if(isset($input['xml_send_message_route'])) {
+                // change where message are sent to in XML
                 $this->setInput('xml_send_message_route', 
                     $input['xml_send_message_route']);
             }            
             if(isset($input['command'])) {
+                // change the route, which command DarkChat will perform
                 $this->setInput('command', $input['command']);
             }
         }
@@ -295,7 +300,7 @@ class Chat extends Database
      */
     protected function renderHTML() {
         $this->setInput('messages', $this->getMessagesHTML());
-        include(__DIR__ . '/Web.php');
+        include $this->getConfig('UI_LOCATION');
     }
 }
 

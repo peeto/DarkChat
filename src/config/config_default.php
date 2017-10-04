@@ -11,6 +11,12 @@ $config = [
     'DATABASE_LOCATION' => '/database/darkchat.db',
     
     /**
+     * Where the UI is located either relative to the src directory
+     * or absolutes
+     */
+    'UI_LOCATION' => 'Web.php',
+    
+    /**
      * Maximum numbers to keep in the database
      */
     'NUM_MESSAGES_KEEP' => 50,
