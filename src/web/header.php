@@ -92,7 +92,7 @@ function <?php echo $iname; ?>loadMessages() {
     var tzoffset = 0 - (dDate.getTimezoneOffset() / 60);
     <?php echo $iname; ?>loadMessagesXHRO = getXMLHTTPRequestObject();
     <?php echo $iname; ?>loadMessagesXHRO.onreadystatechange = <?php echo $iname; ?>loadMessagesXHROHandler;
-    <?php echo $iname; ?>loadMessagesXHRO.open("GET", "<?php echo $this->getInput('xml_message_route'); ?>?hc=xmlmessages&tzoffset=" + tzoffset + "&lmts=" + <?php echo $iname; ?>sLastMessageHash, true);
+    <?php echo $iname; ?>loadMessagesXHRO.open("GET", "<?php echo $this->getInput('xml_message_route') . (strpos($this->getInput('xml_message_route'), '?')===false?'?':'&') ?>hc=xmlmessages&tzoffset=" + tzoffset + "&lmts=" + <?php echo $iname; ?>sLastMessageHash, true);
     <?php echo $iname; ?>loadMessagesXHRO.send(" ");
 }
 
