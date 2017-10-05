@@ -17,8 +17,8 @@ class Chat extends Database
 {
     protected $input;
 
-    public function __construct() {
-        parent::__construct();
+    public function __construct($config = '') {
+        parent::__construct($config);
         $this->input = $this->loadDefaultInput();
         $this->loadDefaultXMLRoutes();
         $this->overloadRoutesFromConfig();
@@ -35,7 +35,12 @@ class Chat extends Database
      * @return \self
      */
     public static function load($input) {
-        $instance = new self();
+        $config = '';
+        if(isset($input['config'])) {
+            // set the location of the configuration file
+            $config = $input['config'];
+        }
+        $instance = new self($config);
         $instance->loadUserInput($input);
         $instance->go();
         return $instance;
@@ -143,7 +148,7 @@ class Chat extends Database
     protected function loadUserInput($input) {
         if (is_array($input)) {
             if(isset($input['name'])) {
-                // change the "instance" name
+                // set the "instance" name
                 $this->setInstance($input['name']);
             }
             if(isset($input['route'])) {

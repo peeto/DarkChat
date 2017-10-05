@@ -30,7 +30,7 @@ $config = [
      * How dates and time are displayed
      * see PHP's date() function
      */
-    'TIME_FORMAT' => 'g:i:sa l jS F Y',
+    'TIME_FORMAT' => 'g:i:s a l jS F Y',
     
     /**
      * How often new messages will be loaded by JavaScript
@@ -62,6 +62,12 @@ $config = [
      * for sending XML Messages
      * (optional)
      */
-    'XML_SEND_MESSAGE_ROUTE' => ''
+    'XML_SEND_MESSAGE_ROUTE' => '',
+    
+    /**
+     * Show messages before the send message UI
+     * (may be irrelevant if UI_LOCATION is modified)
+     */
+    'SHOW_MESSAGES_FIRST' => false
 ];
 

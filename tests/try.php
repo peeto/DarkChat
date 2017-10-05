@@ -29,13 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style type="text/css">
         <!--
-        .darkchat .messages {
-            display: inline-block;
-            overflow-y: scroll;
-            height: 200px;
-            width: 100%;
-            margin: 10px;
-        }
         .darkchat .messages .messageblock {
             margin: 10px;
             padding: 10px;

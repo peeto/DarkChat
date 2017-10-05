@@ -13,8 +13,10 @@ class Config
 {
     protected $config;
 
-    public function __construct() {
-        if (file_exists(__DIR__ . '/config/config.php')) {
+    public function __construct($configfile) {
+        if ($configfile!='' && file_exists($configfile)) {
+            include $configfile;
+        } elseif (file_exists(__DIR__ . '/config/config.php')) {
             include __DIR__ . '/config/config.php';
         } elseif (__DIR__ . '/config/config_default.php') {
             include __DIR__ . '/config/config_default.php';

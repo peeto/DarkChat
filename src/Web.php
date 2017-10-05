@@ -10,6 +10,12 @@ $iname = $this->getInput('instance');
 
 // display components
 include 'web/header.php';
-include 'web/sendmessage.php';
-include 'web/displaymessages.php';
+if ($this->getConfig('SHOW_MESSAGES_FIRST'))
+{
+    include 'web/displaymessages.php';
+    include 'web/sendmessage.php';
+} else {
+    include 'web/sendmessage.php';
+    include 'web/displaymessages.php';
+}
 include 'web/footer.php';
