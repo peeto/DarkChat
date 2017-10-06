@@ -10,7 +10,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=7.0",
+        "php": ">=5.4",
         "ext-sqlite3": "*"
     },
     "require-dev": {
