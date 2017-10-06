@@ -6,13 +6,13 @@ namespace DarkChat;
  */
 $config = [
     /**
-     * Where the database is located relative to the src directory
+     * Where the database is located (absolute)
      */
-    'DATABASE_LOCATION' => '/database/darkchat.db',
+    'DATABASE_LOCATION' => dirname(__DIR__) . '/database/darkchat.db',
     
     /**
      * Where the UI is located either relative to the src directory
-     * or absolutes
+     * or absolute
      */
     'UI_LOCATION' => 'Web.php',
     

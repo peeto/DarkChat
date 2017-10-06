@@ -20,12 +20,12 @@ class Database extends Config
     }
 
     protected function initDb() {
-        $this->db = new SQLite3(__DIR__ . $this->getConfig('DATABASE_LOCATION', 
+        $this->db = new SQLite3($this->getConfig('DATABASE_LOCATION', 
             SQLITE3_OPEN_READWRITE));
     }
 
     protected function createDb() {
-        $db = new SQLite3(__DIR__ . $this->getConfig('DATABASE_LOCATION'));
+        $db = new SQLite3($this->getConfig('DATABASE_LOCATION'));
     }
 
     protected function createDbTables() {
@@ -40,7 +40,7 @@ class Database extends Config
 
     protected function autoConfigure()
     {
-        if (!file_exists(__DIR__ . $this->getConfig('DATABASE_LOCATION'))) {
+        if (!file_exists($this->getConfig('DATABASE_LOCATION'))) {
             // build the database if it doesn't exist
             $this->createDb();
             $this->initDb();
