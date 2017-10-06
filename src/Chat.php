@@ -91,7 +91,7 @@ class Chat extends Database
         $this->setInput('instance', $name);
     }
 
-    protected function loadInputVar(string $varname) {
+    protected function loadInputVar($varname) {
         $data = '';
         if (array_key_exists($varname, $_GET)) {
             $data = htmlspecialchars($_GET[$varname]);
@@ -102,7 +102,7 @@ class Chat extends Database
         return $data;
     }
 
-    protected function loadServerVar(string $varname) {
+    protected function loadServerVar($varname) {
         return $_SERVER[$varname];
     }
 

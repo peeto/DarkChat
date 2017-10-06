@@ -94,7 +94,7 @@ class Database extends Config
         }
     }
 
-    protected function dbEncodeTextMax(string $text, int $max)
+    protected function dbEncodeTextMax($text, $max)
     {
         // keep a parameter under it's size limit
         // but with intelligent sql encoding
