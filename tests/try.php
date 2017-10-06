@@ -1,6 +1,6 @@
 <?php
 // Autoload files using Composer autoload
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php'; 
 
 use peeto\DarkChat\Chat;
 ?>
