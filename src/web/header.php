@@ -47,8 +47,8 @@ function <?php echo $iname; ?>loadMessagesXHROHandler() {
                     sHTML += "<div class=\"messageblock\">\r\n";
                     sHTML += "  <div class=\"header\">\r\n";
                     sHTML += "      <div class=\"date_time\">" + oXMLData[i].getElementsByTagName("date_time")[0].childNodes[0].data + "</div>\r\n";
-                    sHTML += "      <div class=\"username\"><b>" + oXMLData[i].getElementsByTagName("sendername")[0].childNodes[0].data +
-                        "</b> <i>said...</i></div>\r\n";
+                    sHTML += "      <div class=\"username\"><span class=\"name\">" + oXMLData[i].getElementsByTagName("sendername")[0].childNodes[0].data +
+                        "</span> <span class=\"said\">said...</span></div>\r\n";
                     sHTML += "  </div>\r\n";
                     sHTML += "  <div class=\"messagetext\">" + oXMLData[i].getElementsByTagName("messagetext")[0].childNodes[0].data + "</div>\r\n";
                     sHTML += "</div>\r\n\r\n";

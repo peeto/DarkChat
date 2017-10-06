@@ -69,7 +69,11 @@ class Chat extends Database
     }
 
     public function getInput($name) {
-        return $this->input[$name];
+        if (isset($this->input[$name])) {
+            return $this->input[$name];
+        } else {
+            return '';
+        }
     }
 
     public function setInput($name, $value) {
