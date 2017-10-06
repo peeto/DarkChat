@@ -4,6 +4,8 @@ namespace peeto\DarkChat;
 
 use peeto\DarkChat\Database;
 
+date_default_timezone_set('UTC');
+
 /**
  * Chat class
  * 
