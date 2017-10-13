@@ -70,4 +70,3 @@ $config = [
      */
     'SHOW_MESSAGES_FIRST' => false
 ];
-

@@ -1,8 +1,9 @@
 <div id="<?php echo $iname; ?>messages" class="messages">
 <?php
 // if there are messages loop through all messages
-if($this->getInput('messages')) foreach ($this->getInput('messages') as $message) {
-?>
+if ($this->getInput('messages')) {
+    foreach ($this->getInput('messages') as $message) {
+        ?>
     <div class="messageblock">
         <div class="header">
             <div class="datetime"><?php echo $message["date_time"]; ?></div>
@@ -14,6 +15,7 @@ if($this->getInput('messages')) foreach ($this->getInput('messages') as $message
         <div class="messagetext"><?php echo $message["message"]; ?></div>
     </div>
 <?php
+    }
 } // end loop
 ?>
 </div>

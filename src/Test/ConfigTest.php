@@ -1,5 +1,6 @@
 <?php
 namespace peeto\DarkChat;
+
 // Autoload files using Composer autoload
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -12,11 +13,9 @@ use PHPUnit\Framework\TestCase;
  */
 class ConfigTest extends TestCase
 {
-
     public function testHasConfig()
     {
         $config = new Config();
         $this->assertObjectHasAttribute('config', $config);
     }
 }
-

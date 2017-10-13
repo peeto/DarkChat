@@ -1,5 +1,6 @@
 <?php
 namespace peeto\DarkChat;
+
 /**
  * This file is used by the Chat class for rendering HTML
  */
@@ -10,8 +11,7 @@ $iname = $this->getInput('instance');
 
 // display components
 include 'web/header.php';
-if ($this->getConfig('SHOW_MESSAGES_FIRST'))
-{
+if ($this->getConfig('SHOW_MESSAGES_FIRST')) {
     include 'web/displaymessages.php';
     include 'web/sendmessage.php';
 } else {

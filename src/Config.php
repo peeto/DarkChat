@@ -1,17 +1,17 @@
 <?php
 namespace peeto\DarkChat;
 
-
 /**
  * Config class
- * 
+ *
  * Loads the configuration for DarkChat
  */
 class Config
 {
     protected $config;
 
-    public function __construct($configfile) {
+    public function __construct($configfile)
+    {
         if ($configfile!='' && file_exists($configfile)) {
             include $configfile;
         } elseif (file_exists(__DIR__ . '/config/config.php')) {
@@ -25,7 +25,8 @@ class Config
         unset($config);
     }
 
-    protected function getConfig($key) {
+    protected function getConfig($key)
+    {
         return $this->config[$key];
     }
 }

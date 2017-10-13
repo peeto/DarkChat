@@ -1,23 +1,23 @@
 <?php
 namespace peeto\DarkChat;
 
-
 use peeto\DarkChat\Database;
 
 date_default_timezone_set('UTC');
 
 /**
  * Chat class
- * 
+ *
  * Invokes the core functionality
- * 
+ *
  * try Chat:load();
  */
 class Chat extends Database
 {
     protected $input;
 
-    public function __construct($config = '') {
+    public function __construct($config = '')
+    {
         parent::__construct($config);
         $this->input = $this->loadDefaultInput();
         $this->loadDefaultXMLRoutes();
@@ -26,17 +26,18 @@ class Chat extends Database
 
     /**
      * Helper/factory for loading DarkChat
-     * 
+     *
      * see loadUserInput() to override input options
      * otherwise loadDefaultInput() loads options
      * from the web server
-     * 
+     *
      * @param array $input
      * @return \self
      */
-    public static function load($input) {
+    public static function load($input)
+    {
         $config = '';
-        if(isset($input['config'])) {
+        if (isset($input['config'])) {
             // set the location of the configuration file
             $config = $input['config'];
         }
@@ -50,7 +51,8 @@ class Chat extends Database
      * go() runs DarkChat
      * automatically called from load()
      */
-    public function go() {
+    public function go()
+    {
         switch ($this->getInput('command')) {
             case 'xmlmessages':
                 $this->displayMessagesXML();
@@ -70,7 +72,8 @@ class Chat extends Database
         }
     }
 
-    public function getInput($name) {
+    public function getInput($name)
+    {
         if (isset($this->input[$name])) {
             return $this->input[$name];
         } else {
@@ -78,7 +81,8 @@ class Chat extends Database
         }
     }
 
-    public function setInput($name, $value) {
+    public function setInput($name, $value)
+    {
         return $this->input[$name] = $value;
     }
 
@@ -86,14 +90,16 @@ class Chat extends Database
      * Allows HTML and Javascript to be prefixed with a name
      * so multiple DakChat instances can run on the same web page
      * (optional)
-     * 
+     *
      * @param string $name
      */
-    public function setInstance($name) {
+    public function setInstance($name)
+    {
         $this->setInput('instance', $name);
     }
 
-    protected function loadInputVar($varname) {
+    protected function loadInputVar($varname)
+    {
         $data = '';
         if (array_key_exists($varname, $_GET)) {
             $data = htmlspecialchars($_GET[$varname]);
@@ -104,11 +110,13 @@ class Chat extends Database
         return $data;
     }
 
-    protected function loadServerVar($varname) {
+    protected function loadServerVar($varname)
+    {
         return $_SERVER[$varname];
     }
 
-    protected function loadDefaultInput() {
+    protected function loadDefaultInput()
+    {
         return [
             'command' => $this->loadInputVar('hc'),
             'name' => $this->loadInputVar('sendname'),
@@ -123,66 +131,74 @@ class Chat extends Database
         ];
     }
     
-    protected function loadDefaultXMLRoutes() {
+    protected function loadDefaultXMLRoutes()
+    {
         $this->setInput('xml_message_route', $this->getInput('route'));
         $this->setInput('xml_send_message_route', $this->getInput('route'));
     }
     
-    protected function overloadRoutesFromConfig() {
+    protected function overloadRoutesFromConfig()
+    {
         if ($this->getConfig('DEFAULT_ROUTE') != '') {
             $this->setInput('route', $this->getConfig('DEFAULT_ROUTE'));
         }
         
         if ($this->getConfig('XML_MESSAGE_ROUTE') != '') {
             $this->setInput(
-                'xml_message_route', 
+                'xml_message_route',
                 $this->getConfig('XML_MESSAGE_ROUTE')
             );
         }
         
         if ($this->getConfig('XML_SEND_MESSAGE_ROUTE') != '') {
             $this->setInput(
-                'xml_send_message_route', 
+                'xml_send_message_route',
                 $this->getConfig('XML_SEND_MESSAGE_ROUTE')
             );
         }
-        
     }
     
-    protected function loadUserInput($input) {
+    protected function loadUserInput($input)
+    {
         if (is_array($input)) {
-            if(isset($input['name'])) {
+            if (isset($input['name'])) {
                 // set the "instance" name
                 $this->setInstance($input['name']);
             }
-            if(isset($input['route'])) {
+            if (isset($input['route'])) {
                 // change the default url
                 $this->setInput('route', $input['route']);
             }
-            if(isset($input['xml_message_route'])) {
-                // change where messages ae loaded from in XML 
-                $this->setInput('xml_message_route', 
-                    $input['xml_message_route']);
+            if (isset($input['xml_message_route'])) {
+                // change where messages ae loaded from in XML
+                $this->setInput(
+ 
+                    'xml_message_route',
+                    $input['xml_message_route']
+ 
+                );
             }
-            if(isset($input['xml_send_message_route'])) {
+            if (isset($input['xml_send_message_route'])) {
                 // change where message are sent to in XML
-                $this->setInput('xml_send_message_route', 
-                    $input['xml_send_message_route']);
-            }            
-            if(isset($input['command'])) {
+                $this->setInput(
+                    'xml_send_message_route',
+                    $input['xml_send_message_route']
+                );
+            }
+            if (isset($input['command'])) {
                 // change the route, which command DarkChat will perform
                 $this->setInput('command', $input['command']);
             }
         }
     }
 
-    protected function getFormattedTime($time) {
+    protected function getFormattedTime($time)
+    {
         // times are stored in UTC
-        $dateTime = new \DateTime ($time, new \DateTimeZone('UTC'));
+        $dateTime = new \DateTime($time, new \DateTimeZone('UTC'));
         // convert to users $offset time
         $offset = $this->getInput('tzoffset');
-        if ($offset) 
-        {
+        if ($offset) {
             $dateTime->setTimezone(
                 new \DateTimeZone(
                     $offset < 0 ? $offset : '+' . $offset
@@ -193,7 +209,8 @@ class Chat extends Database
         return $dateTime->format($this->getConfig('TIME_FORMAT'));
     }
 
-    protected function getMessagesXML() {
+    protected function getMessagesXML()
+    {
         $messages = $this->listDbMessages();
         $sXML = "<messagedata>\r\n";
         // a hash of the last message time is returned to know
@@ -204,12 +221,12 @@ class Chat extends Database
         // return all messages to display
         foreach ($messages as $message) {
             $sXML .= "        <message>\r\n";
-            $sXML .= "            <date_time>" . 
+            $sXML .= "            <date_time>" .
                 $this->getFormattedTime($message["date_time"]) .
                 "</date_time>\r\n";
-            $sXML .= "            <sendername><![CDATA[" . 
+            $sXML .= "            <sendername><![CDATA[" .
                 stripslashes($message["name"]) . "]]></sendername>\r\n";
-            $sXML .= "            <messagetext><![CDATA[" . 
+            $sXML .= "            <messagetext><![CDATA[" .
                 stripslashes($message["message"]) . "]]></messagetext>\r\n";
             $sXML .= "        </message>\r\n";
         }
@@ -218,27 +235,30 @@ class Chat extends Database
         return $sXML;
     }
 
-    protected function getMessagesHTML() {
+    protected function getMessagesHTML()
+    {
         $messages = $this->listDbMessages();
         $webmessages = false;
 
         foreach ($messages as $message) {
             $newmessage = $message;
-            $newmessage['date_time'] = 
+            $newmessage['date_time'] =
                 $this->getFormattedTime($message['date_time']);
             $webmessages[] = $newmessage;
         }
         return $webmessages;
     }
 
-    protected function xmlHeaderNoCache() {
+    protected function xmlHeaderNoCache()
+    {
         header("Content-type: text/xml");
         header("Cache-Control: no-cache");
         header("Expires: -1");
         header("Pragma: no-cache");
     }
 
-    protected function displayMessagesXML() {
+    protected function displayMessagesXML()
+    {
         // Display messages as XML
         $this->xmlHeaderNoCache();
         $lmd = $this->getLastModifiedDate();
@@ -255,14 +275,18 @@ class Chat extends Database
         }
     }
 
-    protected function autoSendMessage() {
+    protected function autoSendMessage()
+    {
         return $this->sendDbMessage(
-            $this->getInput('name'), $this->getInput('message'), 
-            $this->getInput('addr'), $this->getInput('useragent')
+            $this->getInput('name'),
+            $this->getInput('message'),
+            $this->getInput('addr'),
+            $this->getInput('useragent')
         )!==false;
     }
 
-    protected function sendMessageXML() {
+    protected function sendMessageXML()
+    {
         // Send message as and return response in XML
         if (($this->getInput('name')!='') && ($this->getInput('message')!='')) {
             if ($this->autoSendMessage()) {
@@ -284,7 +308,8 @@ class Chat extends Database
         }
     }
 
-    protected function sendHTMLMessageOnly() {
+    protected function sendHTMLMessageOnly()
+    {
         if (
             ($this->getInput('name')!='')
             && ($this->getInput('message')!='')
@@ -299,7 +324,8 @@ class Chat extends Database
         }
     }
     
-    protected function sendHTMLMessage() {
+    protected function sendHTMLMessage()
+    {
         $this->sendHTMLMessageOnly();
         $this->renderHTML();
     }
@@ -307,9 +333,9 @@ class Chat extends Database
     /**
      * Renders the web page, see Web.php
      */
-    protected function renderHTML() {
+    protected function renderHTML()
+    {
         $this->setInput('messages', $this->getMessagesHTML());
         include $this->getConfig('UI_LOCATION');
     }
 }
-

@@ -1,5 +1,6 @@
 <?php
 namespace peeto\DarkChat;
+
 // Autoload files using Composer autoload
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -12,7 +13,6 @@ use PHPUnit\Framework\TestCase;
  */
 class ChatTest extends TestCase
 {
-
     public function testCanSend()
     {
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
@@ -22,12 +22,13 @@ class ChatTest extends TestCase
         $_GET['sendmessage'] = 'Message from phpunit.';
         $_GET['tzoffset'] = '11';
 
-        $this->setOutputCallback(function() {});
+        $this->setOutputCallback(function () {
+        });
         $chat = Chat::load([
             'name' => 'test'
         ]);
 
-        $this->assertEquals( 'Message sent', $chat->getInput('status'));
+        $this->assertEquals('Message sent', $chat->getInput('status'));
     }
 
     public function testHasMessages()
@@ -46,6 +47,4 @@ class ChatTest extends TestCase
 
         $this->assertArrayHasKey('date_time', $chat->getInput('messages')[0]);
     }
-
 }
-
