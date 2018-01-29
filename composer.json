@@ -1,7 +1,7 @@
 {
     "name": "peeto/dark-chat",
     "description": "An all for all chat app in PHP. Named DarkChat because the bots will come!",
-    "license": "GNU General Public License v2.0",
+    "license": "GPL-2.0-only",
     "authors": [
         {
             "name": "peeto",
